@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --ignore-watch dist src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc && tsc-alias",
+    "start": "node dist/server.js",
     "server": "nodemon server.js"
   },
   "bin": {
