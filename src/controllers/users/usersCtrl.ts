@@ -2,17 +2,19 @@ import expressAsyncHandler from 'express-async-handler';
 import asyncHandler from 'express-async-handler';
 import crypto from 'crypto';
 
-import generateToken from '../../config/token/generateToken.js';
-
 import User from '../../model/user/User.js';
-import validateMongodbId from '../../../utils/validateMongoDbId.js';
+
 import sgMail from '@sendgrid/mail';
-import cloudinaryUoloadImage from '../../../utils/cloudinary.js';
 import fs from 'fs';
 
-import blockUser from '../../../utils/blockUser.js';
+
 
 import dotenv from 'dotenv';
+import config from '@conf/env.const.js';
+import generateToken from '@conf/token/generateToken.js';
+import validateMongodbId from '../../utils/validateMongoDbId.js';
+import blockUser from '../../utils/blockUser.js';
+import cloudinaryUploadImage from '../../utils/cloudinary.js';
 dotenv.config();
 
 /*********************************
@@ -20,7 +22,7 @@ dotenv.config();
  * *******************************
  */
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setApiKey(config.emailSender.sendgrid_api_key);
 
 const SERVER_EMAIL = process.env.EMAIL;
 
@@ -41,10 +43,6 @@ const userRegisterCtrl = asyncHandler(async (req, res) => {
 
   try {
     const user = await User.create({
-      // firstName: "Majedul",
-      // lastName: "hasan",
-      // email: "e3@gmail.com",
-      // firstName: req.body && req.body.firstName,
       firstName: req?.body?.firstName,
       lastName: req?.body?.lastName,
       email: req?.body?.email,
@@ -90,7 +88,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(404);
-    throw new Error('Login credintials are not valied');
+    throw new Error('Login credentials are not valid');
   }
   // res.json("user login");
 });
@@ -119,7 +117,7 @@ const deleteUserCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
   // chack if iser id is valied
-  validateMongodbId(id);
+  validateMongodbId(id as string);
   try {
     const deletedUser = await User.findByIdAndDelete(id);
     res.json(deletedUser);
@@ -140,7 +138,7 @@ const fetchUserDetailsCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
   // chack if iser id is valied
-  validateMongodbId(id);
+  validateMongodbId(id as string);
   try {
     const user = await User.findById(id);
     res.json(user);
@@ -160,7 +158,7 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
   //console.log("line 165", typeof id);
 
   // chack if iser id is valied
-  validateMongodbId(id);
+  validateMongodbId(id as string);
 
   // 1. find the login user
 
@@ -175,19 +173,18 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
       .populate('posts')
       .populate('viewedBy');
     // find in array
-    const alreadyViewed = myProfile?.viewedBy?.find((user) => {
+    const alreadyViewed = myProfile?.viewedBy?.find((user: any) => {
       return user?._id?.toString() === loggedInUserId;
     });
 
-    const myId = myProfile?.viewedBy?.find((user) => {
+    const myId = myProfile?.viewedBy?.find(() => {
       return loggedInUserId === id;
     });
-
     //console.log(typeof alreadyViewed);
     //console.log(myId);
 
     if (alreadyViewed || loggedInUserId === id) {
-      // .populate("posts") => can create a virtual fild name posts
+      // .populate("posts") => can create a virtual field name posts
       //console.log('if statement');
 
       res.json(myProfile);
@@ -210,12 +207,12 @@ const userProfileCtrl = expressAsyncHandler(async (req, res) => {
  */
 
 const updateUserCtrl = expressAsyncHandler(async (req, res) => {
-  const { id } = req?.user;
+  const id = req?.user?._id;
   //console.log("object id   ",id)
   // chack if iser id is valied
 
   blockUser(req?.user);
-  validateMongodbId(id);
+  validateMongodbId(id as string);
 
   const user = await User.findByIdAndUpdate(
     id,
@@ -242,11 +239,11 @@ const updateUserCtrl = expressAsyncHandler(async (req, res) => {
 const updateUserPasswordCtrl = expressAsyncHandler(async (req, res) => {
   //destructure the login user
 
-  const { id } = req.user;
+  const id = req.user?._id;
 
   const { password } = req.body;
 
-  validateMongodbId(id);
+  validateMongodbId(id as string);
 
   const user = await User.findById(id);
 
@@ -266,15 +263,15 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
   //2. update the loging following field
 
   const { followId } = req.body;
-  const logingUserId = req.user.id;
-  //console.log({followId, logingUserId})
+  const loggedUserId = req?.user?._id;
+  //console.log({followId, loggedUserId})
 
   // find the target user and check if the login id exist
 
   const targetUser = await User.findById(followId);
   //console.log(targetUser)
   const alreadyFollowing = targetUser?.followers?.find(
-    (user) => user?.toString() === logingUserId.toString(),
+    (user: any) => user?.toString() === (loggedUserId as string).toString(),
   );
 
   //console.log(alreadyFollowing)
@@ -285,7 +282,7 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     followId,
     {
-      $push: { followers: logingUserId },
+      $push: { followers: loggedUserId },
       isFollowing: true,
     },
     { new: true },
@@ -293,7 +290,7 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
 
   //2. update the loging following field
   await User.findByIdAndUpdate(
-    logingUserId,
+    loggedUserId,
     { $push: { following: followId } },
     { new: true },
   );
@@ -308,18 +305,18 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
 
 const unfollowUserCtrl = expressAsyncHandler(async (req, res) => {
   const { unfollowId } = req.body;
-  const logingUserId = req.user.id;
+  const loggedUserId = req.user?._id;
 
   await User.findByIdAndUpdate(
     unfollowId,
     {
-      $pull: { followers: logingUserId },
+      $pull: { followers: loggedUserId },
       isFollowing: false,
     },
     { new: true },
   );
   await User.findByIdAndUpdate(
-    logingUserId,
+    loggedUserId,
     {
       $pull: { following: unfollowId },
     },
@@ -337,7 +334,7 @@ const unfollowUserCtrl = expressAsyncHandler(async (req, res) => {
 const blockUserCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  validateMongodbId(id);
+  validateMongodbId(id as string);
 
   const user = await User.findByIdAndUpdate(
     id,
@@ -358,7 +355,7 @@ const blockUserCtrl = expressAsyncHandler(async (req, res) => {
 const unblockUserCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  validateMongodbId(id);
+  validateMongodbId(id as string);
 
   const user = await User.findByIdAndUpdate(
     id,
@@ -372,12 +369,12 @@ const unblockUserCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 /*********************************
- * generete  verification token and  send email
+ * generate  verification token and  send email
  * *******************************
  */
 
 const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
-  const loginUserId = req.user.id;
+  const loginUserId = req.user?._id;
   //console.log(loginUserId)
   const user = await User.findById(loginUserId);
   //console.log(user)
@@ -390,8 +387,8 @@ const generateVerificationTokenCtrl = expressAsyncHandler(async (req, res) => {
     // build msg
     const resetURL = `If you were requested to verify your account, verify now within 10 minutes, otherwise ignore this message <a href="http://localhost:3000/verify-account/${verificationToken}">click to verify</a>`;
     const msg = {
-      to: user?.email,
-      from: SERVER_EMAIL, //  verified sender
+      to: user?.email as string,
+      from: SERVER_EMAIL as string,
       subject: 'verify account',
       //  text: 'and easy to do anywhere, even with Node.js',
       html: resetURL,
@@ -452,7 +449,7 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
     const resetURL = `If you were requested to reset your password, reset now within 10 minutes, otherwise ignore this message <a href="http://localhost:3000/reset-password/${token}">click to reset</a>`;
     const msg = {
       to: email,
-      from: SERVER_EMAIL, //  verified sender
+      from: SERVER_EMAIL as string, //  verified sender
       subject: 'reset password',
       //  text: 'and easy to do anywhere, even with Node.js',
       html: resetURL,
@@ -478,14 +475,14 @@ const passwordResetCtrl = expressAsyncHandler(async (req, res) => {
   //console.log(hashedToken)
   //find this user by token
   const user = await User.findOne({
-    passwordRessetToken: hashedToken,
-    passwordRessetExpires: { $gt: new Date() },
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: new Date() },
   });
   if (!user) throw new Error('token expired, try again');
   // update the property true
   user.password = password;
-  user.passwordRessetToken = undefined;
-  user.passwordRessetExpires = undefined;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
 
   await user.save();
 
@@ -506,17 +503,17 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
   //console.log(req.file)
   // find the logged in user
   //console.log({user: req.user})
-  const { _id } = req?.user;
+  const _id = req?.user?._id;
 
   blockUser(req?.user);
 
   // 1. get the auth to img
 
-  const localPath = `public/images/profile/${req.file.filename}`;
+  const localPath = `public/images/profile/${(req.file as Express.Multer.File).filename}`;
 
   //2. upload to cloudinary
 
-  const imageUploaded = await cloudinaryUoloadImage(localPath);
+  const imageUploaded: any = await cloudinaryUploadImage(localPath);
   //console.log(imageUploaded.secure_url)
 
   // find the user

@@ -1,10 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 import bcrypt from "bcryptjs";
 import crypto from 'crypto'
 
-// create schema
 
+interface IUser extends Document {
+  followers: string[]; // or ObjectId[] depending on your schema
+}
+
+// create schema
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -88,8 +92,8 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: {
       type: Date,
     },
-    passwordRessetToken: String,
-    passwordRessetExpires: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
     active: {
       type: Boolean,
       default: false,
@@ -110,7 +114,7 @@ const userSchema = new mongoose.Schema(
 // virtual method to populate created post
 
 userSchema.virtual('posts', {
-  ref:'Post',
+  ref: 'Post',
   foreignField: 'user',
   localField: '_id'
 
@@ -118,10 +122,10 @@ userSchema.virtual('posts', {
 
 // virtual method to create accountType
 
-userSchema.virtual('accountType').get(function(){
+userSchema.virtual('accountType').get(function (this: IUser) {
   const totalFollowers = this.followers?.length
   return totalFollowers >= 2 ? "pro account" : "starter account"
-  
+
 })
 
 
@@ -138,39 +142,39 @@ userSchema.pre("save", async function (next) {
   // hash password
   const salt = await bcrypt.genSaltSync(10);
   this.password = await bcrypt.hash(this.password, salt);
-  
+
 });
 
 // match hashed password
-userSchema.methods.isPasswordMatched = async function (enteredPassword) {
+userSchema.methods.isPasswordMatched = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // verify account
-userSchema.methods.createAccountVerificationToken = async function (){
-     // create token
-     const verificationToken = crypto.randomBytes(32).toString('hex');
-     this.accountVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex')
+userSchema.methods.createAccountVerificationToken = async function () {
+  // create token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  this.accountVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex')
 
-     this.accountVerificationTokenExpires = Date.now()+ 10*60*1000 //10min
+  this.accountVerificationTokenExpires = Date.now() + 10 * 60 * 1000 //10min
 
-     return verificationToken
+  return verificationToken
 
 }
 
 
 // password reset/ forgetPassword
-userSchema.methods.createPasswordResetToken = async function (){
-    // create token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    
-    this.passwordRessetToken = crypto.createHash('sha256').update(resetToken).digest('hex')
-    //console.log({resetToken})
+userSchema.methods.createPasswordResetToken = async function () {
+  // create token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+  //console.log({resetToken})
 
 
-    this.passwordRessetExpires = Date.now()+ 10*60*1000 //10min
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000 //10min
 
-    return resetToken
+  return resetToken
 
 }
 

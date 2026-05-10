@@ -8,11 +8,9 @@ dotenv.config();
 import morgan from 'morgan';
 app.use(morgan('dev'));
 
-import dbConnect from './config/db/dbConnect'
-dbConnect();
 
 //errorHandler
-import { errorHandler, notFound } from './middlewares/errorHandler';
+import { errorHandler, notFound } from '../middlewares/errorHandler';
 
 //controllers
 

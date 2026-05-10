@@ -1,44 +1,37 @@
 import expressAsyncHandler from "express-async-handler";
 import sgMail from '@sendgrid/mail';
-import EmailMsg from "../../model/emailMessaging/EmailMessaging.js";
-import dotenv  from "dotenv"
+import EmailMsg from "../../model/emailMessaging/EmailMessaging";
+import dotenv from "dotenv"
 
 import Filter from 'bad-words';
+import config from "@conf/env.const";
 
 dotenv.config()
 
 
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
+sgMail.setApiKey(config.emailSender.sendgrid_api_key)
 
 
 
 
-const sendEmailMsgCtrl = expressAsyncHandler(async(req, res)=>{
+
+const sendEmailMsgCtrl = expressAsyncHandler(async (req, res) => {
     const {
         to,
         subject,
         message
-        } = req.body
-
+    } = req.body
     // get the msg
-
-    const emailMsg = subject + " "+ message
+    const emailMsg = subject + " " + message
     // check for bad-words
     const filter = new Filter
-
-    const isProfane = filter.isProfane(emailMsg)    
+    const isProfane = filter.isProfane(emailMsg)
     //console.log(isProfane)
-
-     // block user
-     if(isProfane){     
-   
-     throw new Error('email failed because it contains profen words')
-     }
+    // block user
+    if (isProfane) {
+        throw new Error('email failed because it contains profane words')
+    }
     //  bad-words
-
-
     try {
         // build up msg
         const msg = {
@@ -46,32 +39,23 @@ const sendEmailMsgCtrl = expressAsyncHandler(async(req, res)=>{
             from: "hasanmajedul@gmail.com", // Change to your verified sender
             subject,
             text: message
-            }
-
+        }
         await sgMail.send(msg)
         // save to db
-
         //console.log(req?.user)
-
         const msgDB = await EmailMsg.create({
-            sentBy: req?.user?._id ,
+            sentBy: req?.user?._id,
             from: req?.user?.email,
-            to ,
-            message ,
-            subject ,
+            to,
+            message,
+            subject,
         })
-
-    res.json("mail sent")
-        
+        res.json("mail sent")
     } catch (error) {
-    res.json(error)
-        
+        res.json(error)
     }
-
-
 })
 
-
-export  {
+export {
     sendEmailMsgCtrl
 }

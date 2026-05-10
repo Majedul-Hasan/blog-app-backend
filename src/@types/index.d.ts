@@ -1,8 +1,11 @@
 
 interface AuthUser {
-    id: string;
+    _id: string;
     role?: string;
     status?: string;
+    email?: string;
+    accountType?: string;
+    postCount: number;
 }
 declare global {
     namespace Express {

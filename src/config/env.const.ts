@@ -58,6 +58,7 @@ export const config = {
     emailSender: {
         email: env.EMAIL,
         app_pass: env.EMAIL_PASSWORD,
+        sendgrid_api_key: env.SENDGRID_API_KEY,
     },
 
     cloudinary: {

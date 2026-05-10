@@ -8,6 +8,9 @@
     "start": "node server.js",
     "server": "nodemon server.js"
   },
+  "bin": {
+    "rename-ext": "./rename-ext.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -30,9 +33,15 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/bad-words": "^3.0.3",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.1.0",
     "@types/node": "^25.6.2",
+    "@types/sharp": "^0.31.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.3"
   }
