@@ -14,11 +14,11 @@ import { errorHandler, notFound } from '../middlewares/errorHandler';
 
 //controllers
 
-import userRoutes from '../route/users/usersRoute.js';
-import postRoutes from '../route/posts/postRoute.js';
-import commentRoutes from '../route/comments/commentsRoute.js';
-import emailRoutes from '../route/email/emailRouts.js';
-import categoryRoutes from '../route/category/categoryRoute.js';
+import userRoutes from '../route/users/usersRoute';
+import postRoutes from '../route/posts/postRoute';
+import commentRoutes from '../route/comments/commentsRoute';
+import emailRoutes from '../route/email/emailRouts';
+import categoryRoutes from '../route/category/categoryRoute';
 import cors from 'cors';
 
 // api rought

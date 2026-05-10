@@ -2,7 +2,7 @@ import expressAsyncHandler from 'express-async-handler';
 import asyncHandler from 'express-async-handler';
 import crypto from 'crypto';
 
-import User from '../../model/user/User.js';
+import User from '../../model/user/User';
 
 import sgMail from '@sendgrid/mail';
 import fs from 'fs';
@@ -10,11 +10,11 @@ import fs from 'fs';
 
 
 import dotenv from 'dotenv';
-import config from '@conf/env.const.js';
-import generateToken from '@conf/token/generateToken.js';
-import validateMongodbId from '../../utils/validateMongoDbId.js';
-import blockUser from '../../utils/blockUser.js';
-import cloudinaryUploadImage from '../../utils/cloudinary.js';
+import config from '@conf/env.const';
+import generateToken from '@conf/token/generateToken';
+import validateMongodbId from '../../utils/validateMongoDbId';
+import blockUser from '../../utils/blockUser';
+import cloudinaryUploadImage from '../../utils/cloudinary';
 dotenv.config();
 
 /*********************************

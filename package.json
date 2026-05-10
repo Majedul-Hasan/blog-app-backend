@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --ignore-watch dist src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "server": "nodemon server.js"
@@ -43,6 +44,8 @@
     "@types/node": "^25.6.2",
     "@types/sharp": "^0.31.1",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.17",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.3"
   }
 }
