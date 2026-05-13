@@ -20,6 +20,7 @@ import commentRoutes from '../route/comments/commentsRoute';
 import emailRoutes from '../route/email/emailRouts';
 import categoryRoutes from '../route/category/categoryRoute';
 import cors from 'cors';
+import router from '@shared/routes';
 
 // api rought
 app.use((req, res, next) => {
@@ -42,6 +43,7 @@ if (process.env.NODE_ENV === 'development') {
     app.get('/', (req, res) => res.status(200).send('production'));
 }
 
+app.use("/api/v2", router);
 //user route
 app.use('/api/users', userRoutes);
 
