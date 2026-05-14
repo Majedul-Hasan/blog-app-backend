@@ -1,6 +1,6 @@
 import http from "http";
 import dbConnect from "@conf/db/dbConnect";
-import config from "@conf/env.const";
+import config from "@shared/config/env.const";
 import app from "@app/app";
 
 const PORT = config.port || 5001;

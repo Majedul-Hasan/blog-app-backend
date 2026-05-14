@@ -19,7 +19,8 @@ const envSchema = z.object({
     MONGODB_URI: z.string().min(1),
 
     // JWT
-    JWT_SECRET: z.string().min(1),
+    JWT_SECRET: z.string().min(10),
+    JWT_REFRESH_SECRET: z.string().min(10),
     SENDGRID_API_KEY: z.string().min(1),
 
     // CLOUDINARY
@@ -52,6 +53,7 @@ export const config = {
 
     jwt: {
         jwt_secret: env.JWT_SECRET,
+        jwt_refresh_secret: env.JWT_REFRESH_SECRET,
 
     },
 

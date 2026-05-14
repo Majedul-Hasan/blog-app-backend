@@ -98,6 +98,9 @@ export class UserEntity {
     get role() {
         return this.props.role;
     }
+    get isBlocked() {
+        return this.props.isBlocked;
+    }
     get password() {
         return this.props.password;
     }

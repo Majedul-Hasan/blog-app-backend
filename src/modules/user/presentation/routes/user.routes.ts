@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { userRegisterCtrl } from "../controllers/user.controller";
+import { loginUserCtrl, userRegisterCtrl } from "../controllers/user.controller";
 
 const userRouter = Router();
 
@@ -8,5 +8,6 @@ const userRouter = Router();
  * POST /api/v1/users/register
  */
 userRouter.post("/register", userRegisterCtrl);
+userRouter.post("/login", loginUserCtrl);
 
 export default userRouter;

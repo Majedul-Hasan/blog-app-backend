@@ -11,6 +11,7 @@ export class MongoUserRepository implements UserRepository {
 
     async save(user: UserEntity) {
         const data = toPersistenceCreate(user);
+        console.log({ 14: data })
         const userCreated = await UserModel.create(data);
         return toDomain(userCreated)
     }
