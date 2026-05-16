@@ -1,7 +1,9 @@
+import { parseGetUsersDTO } from "@modules/user/application/dto/get-users.dto";
 import { parseLoginUserDTO } from "@modules/user/application/dto/login-user.dto";
 import { parseRegisterUserDTO } from "@modules/user/application/dto/register-user.dto";
 import { LoginUserUseCase } from "@modules/user/application/use-cases/login-user.usecase";
 import { RegisterUserUseCase } from "@modules/user/application/use-cases/register-user.usecase";
+import { UserUseCase } from "@modules/user/application/use-cases/user.usecase";
 import { MongoUserRepository } from "@modules/user/infrastructure/persistence/user.repository";
 import { BcryptPasswordHasher } from "@shared/security/bcrypt-password-hasher";
 import { TokenService } from "@shared/security/token.service";
@@ -47,3 +49,53 @@ export const loginUserCtrl = asyncHandler(async (req: Request, res: Response) =>
 
     });
 });
+
+/*
+export const fetchUsersCtrl = asyncHandler(async (req: Request, res: Response) => {
+    const useCase = new UserUseCase(
+        new MongoUserRepository(),
+    );
+
+    const user = await useCase.getAllUsers();
+
+    const resp = user.map((user: any) => user.props)
+    res.status(200).json(resp);
+});
+*/
+
+
+export const getUsersCtrl = asyncHandler(async (req, res) => {
+    const dto = parseGetUsersDTO(req.query);
+
+    const useCase = new UserUseCase(new MongoUserRepository());
+
+    const result = await useCase.getUsers(dto);
+    const resp = result.data.map((user: any) => {
+        delete user.props.password
+
+        return user.props
+    })
+
+    res.json({
+
+        meta: {
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+            totalPages: Math.ceil(result.total / result.limit),
+        },
+        data: resp,
+    });
+});
+export const fetchUserByIdCtrl = asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params['id'];
+    const useCase = new UserUseCase(
+        new MongoUserRepository(),
+    );
+
+    const user = await useCase.getUserById(id as string);
+
+
+    res.status(200).json(user);
+});
+

@@ -46,3 +46,7 @@ export const toPersistenceCreate = (entity: UserEntity) => {
         role: entity.role,
     };
 };
+
+export const toDomainList = (docs: any[]): UserEntity[] => {
+    return docs.map(toDomain);
+};

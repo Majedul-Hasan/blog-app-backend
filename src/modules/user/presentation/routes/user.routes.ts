@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { loginUserCtrl, userRegisterCtrl } from "../controllers/user.controller";
+import { loginUserCtrl, userRegisterCtrl, fetchUserByIdCtrl, getUsersCtrl } from "../controllers/user.controller";
+import authMiddleWare from "../../../../middlewares/authMiddleware";
 
 const userRouter = Router();
 
@@ -9,5 +10,7 @@ const userRouter = Router();
  */
 userRouter.post("/register", userRegisterCtrl);
 userRouter.post("/login", loginUserCtrl);
+userRouter.get("/", authMiddleWare, getUsersCtrl);
+userRouter.get("/:id", fetchUserByIdCtrl);
 
 export default userRouter;

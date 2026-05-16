@@ -132,6 +132,11 @@ const userSchema = new mongoose.Schema<IUser>(
     }
 );
 
+
+userSchema.index({ email: 1 });
+userSchema.index({ firstName: 1 });
+userSchema.index({ role: 1 });
+
 // ================= VIRTUALS =================
 
 // posts
@@ -196,6 +201,7 @@ userSchema.methods.createPasswordResetToken = function (): string {
 
     return resetToken;
 };
+
 
 // ================= MODEL =================
 const User: Model<IUser> = mongoose.models.User ?? mongoose.model<IUser>('User', userSchema);
