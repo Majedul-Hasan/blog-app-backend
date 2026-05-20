@@ -1,12 +1,13 @@
+
+
 import mongoose, { Document } from "mongoose";
 
 import bcrypt from "bcryptjs";
 import crypto from 'crypto'
+import { IUser } from "@modules/user/infrastructure/models/user.model";
 
 
-interface IUser extends Document {
-  followers: string[]; // or ObjectId[] depending on your schema
-}
+
 
 // create schema
 const userSchema = new mongoose.Schema(
@@ -131,7 +132,7 @@ userSchema.virtual('accountType').get(function (this: IUser) {
 
 
 
-
+/*
 
 // Hash password
 userSchema.pre("save", async function (next) {
@@ -144,11 +145,11 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 
 });
-
 // match hashed password
 userSchema.methods.isPasswordMatched = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+*/
 
 // verify account
 userSchema.methods.createAccountVerificationToken = async function () {
