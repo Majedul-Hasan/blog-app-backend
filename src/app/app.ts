@@ -1,5 +1,5 @@
 
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 const app = express();
 
 import dotenv from 'dotenv';
@@ -10,7 +10,7 @@ app.use(morgan('dev'));
 
 
 //errorHandler
-import { errorHandler, notFound } from '../middlewares/errorHandler';
+// import { errorHandler, notFound } from '../middlewares/errorHandler';
 
 //controllers
 
@@ -21,15 +21,19 @@ import emailRoutes from '../route/email/emailRouts';
 import categoryRoutes from '../route/category/categoryRoute';
 import cors from 'cors';
 import router from '@shared/routes';
+import stream from "@infra/logging/stream"
+import globalErrorHandler from '@infra/http/express/middlewares/globalErrorHandler';
+import status from 'http-status';
 
-// api rought
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     next();
 });
 
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
+app.use(morgan("combined", { stream }));
 
 //middleware
 app.use(express.json());
@@ -59,9 +63,20 @@ app.use('/api/email', emailRoutes);
 //category Routes
 app.use('/api/category', categoryRoutes);
 
-//error Handler
-app.use(notFound);
-app.use(errorHandler);
+app.use(globalErrorHandler);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+
+    res.status(status.NOT_FOUND).json({
+        success: false,
+        message: "API NOT FOUND!",
+        error: {
+            path: req.originalUrl,
+            message: "Your requested path is not found!",
+        },
+    });
+});
+
 
 
 export default app;

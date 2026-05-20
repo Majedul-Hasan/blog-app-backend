@@ -1,5 +1,5 @@
 import http from "http";
-import dbConnect from "@conf/db/dbConnect";
+import dbConnect from "@infra/database/mongoose/dbConnect";
 import config from "@shared/config/env.const";
 import app from "@app/app";
 
