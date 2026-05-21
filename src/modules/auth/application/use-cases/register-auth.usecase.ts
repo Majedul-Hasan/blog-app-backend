@@ -8,7 +8,7 @@ import config from "@shared/config/env.const";
 import { UserRepository } from "@modules/user/domain/user.repository.interface";
 import { UserEntity } from "@modules/user/domain/user.entity";
 import { UserExistsError } from "@shared/errors/user/UserExistsError";
-import { UserRole } from "@modules/user/domain/types/user.types";
+import { UserRole } from "@modules/user/domain/types/userRole.types";
 export class RegisterAuthUseCase {
     constructor(
         private readonly userRepo: UserRepository,
@@ -24,8 +24,6 @@ export class RegisterAuthUseCase {
         if (existing) throw new UserExistsError();
 
         const hashedPassword = await this.hasher.hash(dto.password);
-
-
         const user = UserEntity.create({
             firstName: dto.firstName,
             lastName: dto.lastName,
