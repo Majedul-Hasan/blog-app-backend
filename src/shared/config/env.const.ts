@@ -17,10 +17,17 @@ const envSchema = z.object({
     PORT: z.string().default("8000"),
 
     MONGODB_URI: z.string().min(1),
-
+    CLIENT_URL: z.string().min(11),
     // JWT
     JWT_SECRET: z.string().min(10),
     JWT_REFRESH_SECRET: z.string().min(10),
+    JWT_ACCESS_EXPIRES_IN: z.string(),
+    JWT_REFRESH_EXPIRES_IN: z.string(),
+    JWT_SECRET_EXPIRES_IN: z.string(),
+
+
+
+
     SENDGRID_API_KEY: z.string().min(1),
 
     // CLOUDINARY
@@ -50,11 +57,14 @@ export const config = {
     env: env.NODE_ENV,
     port: Number(env.PORT),
     mongodb_uri: env.MONGODB_URI,
+    client_url: env.CLIENT_URL,
 
     jwt: {
         jwt_secret: env.JWT_SECRET,
         jwt_refresh_secret: env.JWT_REFRESH_SECRET,
-
+        access_expires_in: env.JWT_ACCESS_EXPIRES_IN,
+        refresh_expires_in: env.JWT_REFRESH_EXPIRES_IN,
+        secret_expires_in: env.JWT_SECRET_EXPIRES_IN,
     },
 
     emailSender: {
