@@ -1,4 +1,4 @@
-import AppError from "@shared/errors/base/AppError";
+import { UnauthorizedError } from "@shared/errors";
 
 type ExtractBearerTokenOptions = {
     statusCode?: number;
@@ -11,19 +11,15 @@ export const extractBearerToken = (
     const statusCode = options?.statusCode ?? 401;
 
     if (!authHeader) {
-        throw new AppError(
-            statusCode,
-            "Authorization header is missing"
-        );
+        throw new UnauthorizedError("Authorization header is missing")
+
     }
 
     const [scheme, token] = authHeader.trim().split(" ");
 
     if (scheme !== "Bearer" || !token) {
-        throw new AppError(
-            statusCode,
-            "Invalid authorization format"
-        );
+        throw new UnauthorizedError("Invalid authorization format")
+
     }
 
     return token;
