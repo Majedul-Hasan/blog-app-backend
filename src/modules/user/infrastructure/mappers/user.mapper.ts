@@ -1,7 +1,5 @@
 import { UserEntity } from "@modules/user/domain/user.entity";
 
-
-
 export const toDomain = (doc: any): UserEntity => {
     return UserEntity.fromPersistence({
         id: doc._id.toString(),
