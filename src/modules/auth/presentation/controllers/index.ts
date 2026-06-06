@@ -49,7 +49,7 @@ import { ResendVerificationUseCase } from '@modules/auth/application/use-cases/r
 import { LogoutAuthUseCase } from '@modules/auth/application/use-cases/logout-auth.usecase';
 import { VerifyAccessTokenUseCase } from '@modules/auth/application/use-cases/verify-access-token.usecase';
 import { AuthenticationService } from '@modules/auth/application/services/authentication.service';
-
+import { NodemailerEmailProvider } from '@infra/email/nodemailer/nodemailer-email.provider';
 
 /**
  * repository
@@ -67,51 +67,39 @@ const accessTokenProvider = new JwtTokenProvider(config.jwt.jwt_secret);
 
 const refreshTokenProvider = new JwtTokenProvider(config.jwt.jwt_refresh_secret);
 
-const emailProvider = new SendGridEmailProvider();
+// const emailProvider = new SendGridEmailProvider();
+const emailProvider = new NodemailerEmailProvider();
 
 /**
  * use-cases
  */
 
 const loginUseCase = new LoginAuthUseCase(userRepo, hasher, accessTokenProvider);
-
 const registerUseCase = new RegisterAuthUseCase(userRepo, hasher, accessTokenProvider);
-
 const changePasswordUseCase = new ChangePasswordUseCase(userRepo, hasher);
-
 const forgotPasswordUseCase = new ForgotPasswordUseCase(userRepo, accessTokenProvider, emailProvider);
-
 const resetPasswordUseCase = new ResetPasswordUseCase(userRepo, hasher, accessTokenProvider);
-
 const refreshTokenUseCase = new RefreshTokenUseCase(userRepo, accessTokenProvider, refreshTokenProvider);
-
 const verifyEmailUseCase = new VerifyEmailUseCase(userRepo, accessTokenProvider);
-
 const resendVerificationUseCase = new ResendVerificationUseCase(userRepo, accessTokenProvider, emailProvider);
-
 const logoutUseCase = new LogoutAuthUseCase();
-
 const verifyAccessTokenUseCase = new VerifyAccessTokenUseCase(userRepo, accessTokenProvider);
 
 /**
  * controller
  */
 
-export const authenticationService =
-    new AuthenticationService(
-        userRepo,
-        accessTokenProvider
-    );
+export const authenticationService = new AuthenticationService(userRepo, accessTokenProvider);
 
 export const authController = new AuthController(
-    loginUseCase,
-    registerUseCase,
-    changePasswordUseCase,
-    forgotPasswordUseCase,
-    resetPasswordUseCase,
-    refreshTokenUseCase,
-    verifyEmailUseCase,
-    resendVerificationUseCase,
-    logoutUseCase,
-    verifyAccessTokenUseCase
+  loginUseCase,
+  registerUseCase,
+  changePasswordUseCase,
+  forgotPasswordUseCase,
+  resetPasswordUseCase,
+  refreshTokenUseCase,
+  verifyEmailUseCase,
+  resendVerificationUseCase,
+  logoutUseCase,
+  verifyAccessTokenUseCase
 );
