@@ -10,120 +10,153 @@ import { ResendVerificationUseCase } from '@modules/auth/application/use-cases/r
 import { LogoutAuthUseCase } from '@modules/auth/application/use-cases/logout-auth.usecase';
 import { VerifyAccessTokenUseCase } from '@modules/auth/application/use-cases/verify-access-token.usecase';
 import catchAsync from '@infra/http/express/utils/catch-async';
+import sendResponse from '@infra/http/express/utils/sendResponse';
+import status from 'http-status';
 
 export class AuthController {
-    constructor(
-        private readonly loginUseCase: LoginAuthUseCase,
-        private readonly registerUseCase: RegisterAuthUseCase,
-        private readonly changePasswordUseCase: ChangePasswordUseCase,
-        private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
-        private readonly resetPasswordUseCase: ResetPasswordUseCase,
-        private readonly refreshTokenUseCase: RefreshTokenUseCase,
-        private readonly verifyEmailUseCase: VerifyEmailUseCase,
-        private readonly resendVerificationUseCase: ResendVerificationUseCase,
-        private readonly logoutUseCase: LogoutAuthUseCase,
-        private readonly verifyAccessTokenUseCase: VerifyAccessTokenUseCase
-    ) { }
+  constructor(
+    private readonly loginUseCase: LoginAuthUseCase,
+    private readonly registerUseCase: RegisterAuthUseCase,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly verifyEmailUseCase: VerifyEmailUseCase,
+    private readonly resendVerificationUseCase: ResendVerificationUseCase,
+    private readonly logoutUseCase: LogoutAuthUseCase,
+    private readonly verifyAccessTokenUseCase: VerifyAccessTokenUseCase
+  ) {}
 
-    login = catchAsync(async (req: Request, res: Response) => {
-        const result = await this.loginUseCase.execute(req.body);
-        res.status(200).json({
-            success: true,
-            message: 'Login successful',
-            data: result,
-        });
+  login = catchAsync(async (req: Request, res: Response) => {
+    const result = await this.loginUseCase.execute(req.body);
+
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Login successful',
+      data: result,
+    });
+  });
+
+  register = catchAsync(async (req: Request, res: Response) => {
+    const result = await this.registerUseCase.execute(req.body);
+    sendResponse(res, {
+      statusCode: status.CREATED,
+      message: 'Registration successful',
+      data: result,
     });
 
-    register = catchAsync(async (req: Request, res: Response) => {
-        const result = await this.registerUseCase.execute(req.body);
-        res.status(201).json({
-            success: true,
-            message: 'Registration successful',
-            data: result,
-        });
+    // res.status(201).json({
+    //   success: true,
+    //   message: 'Registration successful',
+    //   data: result,
+    // });
+  });
+
+  changePassword = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+    await this.changePasswordUseCase.execute({
+      userId,
+      ...req.body,
     });
 
-    changePassword = async (req: Request, res: Response) => {
-        const userId = req.user?._id;
-        await this.changePasswordUseCase.execute({
-            userId,
-            ...req.body,
-        });
-        res.status(200).json({
-            success: true,
-            message: 'Password changed successfully',
-        });
-    };
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Password changed successfully',
+    });
 
-    forgotPassword = async (req: Request, res: Response) => {
-        await this.forgotPasswordUseCase.execute(req.body);
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Password changed successfully',
+    // });
+  });
 
-        res.status(200).json({
-            success: true,
-            message: 'If account exists, password reset email sent',
-        });
+  forgotPassword = catchAsync(async (req: Request, res: Response) => {
+    await this.forgotPasswordUseCase.execute(req.body);
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'If account exists, password reset email sent',
+    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'If account exists, password reset email sent',
+    // });
+  });
 
-    };
+  resetPassword = catchAsync(async (req: Request, res: Response) => {
+    await this.resetPasswordUseCase.execute(req.body);
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Password changed successfully',
+    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Password reset successful',
+    // });
+  });
 
-    resetPassword = async (req: Request, res: Response) => {
+  refreshToken = catchAsync(async (req: Request, res: Response) => {
+    const result = await this.refreshTokenUseCase.execute(req.body);
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Token refreshed',
+      data: result,
+    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Token refreshed',
+    //   data: result,
+    // });
+  });
 
-        await this.resetPasswordUseCase.execute(req.body);
+  verifyEmail = catchAsync(async (req: Request, res: Response) => {
+    await this.verifyEmailUseCase.execute(req.body);
 
-        res.status(200).json({
-            success: true,
-            message: 'Password reset successful',
-        });
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Email verified successfully',
+    });
 
-    };
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Email verified successfully',
+    // });
+  });
 
-    refreshToken = async (req: Request, res: Response) => {
+  resendVerification = catchAsync(async (req: Request, res: Response) => {
+    await this.resendVerificationUseCase.execute(req.body);
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Verification email sent if account exists',
+    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Verification email sent if account exists',
+    // });
+  });
 
-        const result = await this.refreshTokenUseCase.execute(req.body);
+  logout = catchAsync(async (req: Request, res: Response) => {
+    await this.logoutUseCase.execute();
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Logout successful',
+    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Logout successful',
+    // });
+  });
 
-        res.status(200).json({
-            success: true,
-            message: 'Token refreshed',
-            data: result,
-        });
-
-    };
-
-    verifyEmail = async (req: Request, res: Response) => {
-
-        await this.verifyEmailUseCase.execute(req.body);
-
-        res.status(200).json({
-            success: true,
-            message: 'Email verified successfully',
-        });
-
-    };
-
-    resendVerification = async (req: Request, res: Response) => {
-        await this.resendVerificationUseCase.execute(req.body);
-
-        res.status(200).json({
-            success: true,
-            message: 'Verification email sent if account exists',
-        });
-
-    };
-
-    logout = async (req: Request, res: Response) => {
-        await this.logoutUseCase.execute();
-
-        res.status(200).json({
-            success: true,
-            message: 'Logout successful',
-        });
-    };
-
-    verifyAccessToken = async (req: Request, res: Response) => {
-        const result = await this.verifyAccessTokenUseCase.execute(req.body);
-        res.status(200).json({
-            success: true,
-            message: 'Token valid',
-            data: result,
-        });
-    };
+  verifyAccessToken = catchAsync(async (req: Request, res: Response) => {
+    const result = await this.verifyAccessTokenUseCase.execute(req.body);
+    sendResponse(res, {
+      statusCode: status.OK,
+      message: 'Token valid',
+      data: result,
+    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'Token valid',
+    //   data: result,
+    // });
+  });
 }
