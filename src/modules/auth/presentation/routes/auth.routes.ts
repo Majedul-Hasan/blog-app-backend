@@ -16,15 +16,10 @@ import {
 
 const router = Router();
 router.post('/register', validateRequest(RegisterAuthValidationSchema), authController.register);
-
 router.post('/login', validateRequest(loginAuthValidationSchema), authController.login);
-
 router.post('/forgot-password', validateRequest(forgotPasswordValidationSchema), authController.forgotPassword);
-
 router.post('/reset-password', validateRequest(resetPasswordValidationSchema), authController.resetPassword);
-
 router.post('/refresh-token', validateRequest(refreshTokenValidationSchema), authController.refreshToken);
-
 router.post('/verify-email', validateRequest(verifyEmailValidationSchema), authController.verifyEmail);
 
 router.post(
