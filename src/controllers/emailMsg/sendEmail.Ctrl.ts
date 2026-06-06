@@ -4,7 +4,7 @@ import EmailMsg from "../../model/emailMessaging/EmailMessaging";
 import dotenv from "dotenv"
 
 import Filter from 'bad-words';
-import config from "@conf/env.const";
+import config from "@shared/config/env.const";
 
 dotenv.config()
 

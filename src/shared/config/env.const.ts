@@ -1,83 +1,87 @@
-import dotenv from "dotenv";
-import path from "path";
-import { z } from "zod";
+import dotenv from 'dotenv';
+import path from 'path';
+import { z } from 'zod';
 
 dotenv.config({
-    path: path.join(process.cwd(), ".env"),
+  path: path.join(process.cwd(), '.env'),
 });
 
 /**
-* -----------------------------
-* 1️⃣ Environment Schema
-* -----------------------------
-*/
+ * -----------------------------
+ * 1️⃣ Environment Schema
+ * -----------------------------
+ */
 
 const envSchema = z.object({
-    NODE_ENV: z.string().default("development"),
-    PORT: z.string().default("8000"),
+  NODE_ENV: z.string().default('development'),
+  PORT: z.string().default('8000'),
 
-    MONGODB_URI: z.string().min(1),
-    CLIENT_URL: z.string().min(11),
-    // JWT
-    JWT_SECRET: z.string().min(10),
-    JWT_REFRESH_SECRET: z.string().min(10),
-    JWT_ACCESS_EXPIRES_IN: z.string(),
-    JWT_REFRESH_EXPIRES_IN: z.string(),
-    JWT_SECRET_EXPIRES_IN: z.string(),
+  MONGODB_URI: z.string().min(1),
+  CLIENT_URL: z.string().min(11),
+  // JWT
+  JWT_SECRET: z.string().min(10),
+  JWT_REFRESH_SECRET: z.string().min(10),
+  JWT_ACCESS_EXPIRES_IN: z.string(),
+  JWT_REFRESH_EXPIRES_IN: z.string(),
+  JWT_SECRET_EXPIRES_IN: z.string(),
 
+  SENDGRID_API_KEY: z.string().min(1),
+  EMAIL_HOST: z.string().min(1),
+  EMAIL_PORT: z.string().min(1),
+  EMAIL_SECURE: z.string().min(1),
+  EMAIL_USER: z.string().min(1),
+  EMAIL_PASSWORD: z.string().min(1),
 
+  // CLOUDINARY
+  CLOUDINARY_CLOUD_NAME: z.string().min(1),
+  CLOUDINARY_API_KEY: z.string().min(1),
+  CLOUDINARY_SECRET_KEY: z.string().min(1),
 
-
-    SENDGRID_API_KEY: z.string().min(1),
-
-    // CLOUDINARY
-    CLOUDINARY_CLOUD_NAME: z.string().min(1),
-    CLOUDINARY_API_KEY: z.string().min(1),
-    CLOUDINARY_SECRET_KEY: z.string().min(1),
-
-
-    // Email
-    EMAIL: z.email(),
-    EMAIL_PASSWORD: z.string().optional(),
-
+  // Email
+  EMAIL: z.email(),
+  //   EMAIL_PASSWORD: z.string().optional(),
 });
-
 
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-    console.error("❌ Invalid environment variables:");
-    console.error(parsed.error.format());
-    process.exit(1);
+  console.error('❌ Invalid environment variables:');
+  console.error(parsed.error.format());
+  process.exit(1);
 }
 
 const env = parsed.data;
 
 export const config = {
-    env: env.NODE_ENV,
-    port: Number(env.PORT),
-    mongodb_uri: env.MONGODB_URI,
-    client_url: env.CLIENT_URL,
+  env: env.NODE_ENV,
+  port: Number(env.PORT),
+  mongodb_uri: env.MONGODB_URI,
+  client_url: env.CLIENT_URL,
 
-    jwt: {
-        jwt_secret: env.JWT_SECRET,
-        jwt_refresh_secret: env.JWT_REFRESH_SECRET,
-        access_expires_in: env.JWT_ACCESS_EXPIRES_IN,
-        refresh_expires_in: env.JWT_REFRESH_EXPIRES_IN,
-        secret_expires_in: env.JWT_SECRET_EXPIRES_IN,
-    },
+  jwt: {
+    jwt_secret: env.JWT_SECRET,
+    jwt_refresh_secret: env.JWT_REFRESH_SECRET,
+    access_expires_in: env.JWT_ACCESS_EXPIRES_IN,
+    refresh_expires_in: env.JWT_REFRESH_EXPIRES_IN,
+    secret_expires_in: env.JWT_SECRET_EXPIRES_IN,
+  },
 
-    emailSender: {
-        email: env.EMAIL,
-        app_pass: env.EMAIL_PASSWORD,
-        sendgrid_api_key: env.SENDGRID_API_KEY,
-    },
+  emailSender: {
+    email: env.EMAIL,
+    app_pass: env.EMAIL_PASSWORD,
+    sendgrid_api_key: env.SENDGRID_API_KEY,
+    host: env.EMAIL_HOST,
+    port: env.EMAIL_PORT,
+    secure: env.EMAIL_SECURE,
+    user: env.EMAIL_USER,
+    password: env.EMAIL_PASSWORD,
+  },
 
-    cloudinary: {
-        cloud_name: env.CLOUDINARY_CLOUD_NAME,
-        api_key: env.CLOUDINARY_API_KEY,
-        secret_key: env.CLOUDINARY_SECRET_KEY,
-    },
+  cloudinary: {
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    secret_key: env.CLOUDINARY_SECRET_KEY,
+  },
 };
 
 export default config;
