@@ -1,23 +1,18 @@
-
 export interface TokenPayload {
-    userId: string;
-    email: string;
-    role: string;
+  userId: string;
+  email: string;
+  role: string;
 }
 
 export interface GenerateTokenOptions {
-    expiresIn?: string | number;
-    //   expiresIn?: SignOptions["expiresIn"];
+  expiresIn?: string | number;
+  //   expiresIn?: SignOptions["expiresIn"];
 }
 
 export interface ITokenProvider {
-    generate<T extends object>(
-        payload: T,
-        options?: GenerateTokenOptions
-    ): string;
+  generateAccessToken<T extends object>(payload: T, options?: GenerateTokenOptions): string;
+  generateRefreshToken<T extends object>(payload: T, options?: GenerateTokenOptions): string;
 
-    verify<T extends object>(token: string): T;
+  verifyAccessToken<T extends object>(token: string): T;
+  verifyRefreshToken<T extends object>(token: string): T;
 }
-
-
-
