@@ -2,14 +2,15 @@ import { UserRepository } from '@modules/user/domain/user.repository.interface';
 import { UserEntity } from '@modules/user/domain/user.entity';
 import { PasswordHasher } from '@shared/security/password-hasher.interface';
 import { LoginUserDTO } from '../dto/login-user.dto';
-import { TokenService } from '@shared/security/token.service';
+
 import { InvalidCredentialsError } from '@shared/errors';
+import { ITokenProvider } from '@shared/security/interfaces/token-provider.interface';
 
 export class LoginUserUseCase {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly hasher: PasswordHasher,
-    private readonly tokenService: TokenService
+    private readonly tokenService: ITokenProvider
   ) {}
 
   async execute(dto: LoginUserDTO) {
