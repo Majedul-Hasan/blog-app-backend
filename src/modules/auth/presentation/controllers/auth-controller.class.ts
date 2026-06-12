@@ -63,11 +63,6 @@ export class AuthController {
       statusCode: status.OK,
       message: 'Password changed successfully',
     });
-
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Password changed successfully',
-    // });
   });
 
   forgotPassword = catchAsync(async (req: Request, res: Response) => {
@@ -76,10 +71,6 @@ export class AuthController {
       statusCode: status.OK,
       message: 'If account exists, password reset email sent',
     });
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'If account exists, password reset email sent',
-    // });
   });
 
   resetPassword = catchAsync(async (req: Request, res: Response) => {
@@ -88,10 +79,6 @@ export class AuthController {
       statusCode: status.OK,
       message: 'Password changed successfully',
     });
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Password reset successful',
-    // });
   });
 
   refreshToken = catchAsync(async (req: Request, res: Response) => {
@@ -101,11 +88,6 @@ export class AuthController {
       message: 'Token refreshed',
       data: result,
     });
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Token refreshed',
-    //   data: result,
-    // });
   });
 
   verifyEmail = catchAsync(async (req: Request, res: Response) => {
@@ -115,11 +97,6 @@ export class AuthController {
       statusCode: status.OK,
       message: 'Email verified successfully',
     });
-
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Email verified successfully',
-    // });
   });
 
   resendVerification = catchAsync(async (req: Request, res: Response) => {
@@ -128,10 +105,6 @@ export class AuthController {
       statusCode: status.OK,
       message: 'Verification email sent if account exists',
     });
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Verification email sent if account exists',
-    // });
   });
 
   logout = catchAsync(async (req: Request, res: Response) => {
@@ -140,10 +113,6 @@ export class AuthController {
       statusCode: status.OK,
       message: 'Logout successful',
     });
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Logout successful',
-    // });
   });
 
   verifyAccessToken = catchAsync(async (req: Request, res: Response) => {
@@ -153,10 +122,5 @@ export class AuthController {
       message: 'Token valid',
       data: result,
     });
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'Token valid',
-    //   data: result,
-    // });
   });
 }
