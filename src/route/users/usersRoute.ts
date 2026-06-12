@@ -1,8 +1,5 @@
-import express from "express";
+import express from 'express';
 import {
-  userRegisterCtrl,
-  loginUserCtrl,
-  fetchUsersCtrl,
   deleteUserCtrl,
   fetchUserDetailsCtrl,
   userProfileCtrl,
@@ -16,44 +13,36 @@ import {
   accountVerificationCtrl,
   forgetPasswordToken,
   passwordResetCtrl,
-  profilePhotoUploadCtrl
-
-} from "../../controllers/users/usersCtrl";
-import authMiddleWare from "../../middlewares/authMiddleware";
-import { photoUpload, profilePhotoResize } from "../../middlewares/photoUpload";
-
+  profilePhotoUploadCtrl,
+} from '../../controllers/users/usersCtrl';
 
 const userRoutes = express.Router();
 
-userRoutes.post("/register", userRegisterCtrl);
-userRoutes.post("/login", loginUserCtrl);
-userRoutes.put("/password", authMiddleWare, updateUserPasswordCtrl);
-userRoutes.put("/profile-photo-upload",
-  authMiddleWare, photoUpload.single('image'), profilePhotoResize, profilePhotoUploadCtrl);
-
-
-userRoutes.get("/", authMiddleWare, fetchUsersCtrl);
-userRoutes.post("/forget-password-token", forgetPasswordToken);
-userRoutes.put("/reset-password", passwordResetCtrl);
-
-userRoutes.put("/follow", authMiddleWare, followingUserCtrl);
-userRoutes.post("/generate-verify-email-token", authMiddleWare, generateVerificationTokenCtrl);
-userRoutes.put("/verify-account", authMiddleWare, accountVerificationCtrl);
-
-
-userRoutes.put("/unfollow", authMiddleWare, unfollowUserCtrl);
-userRoutes.put("/block-user/:id", authMiddleWare, blockUserCtrl);
-userRoutes.put("/unblock-user/:id", authMiddleWare, unblockUserCtrl
+userRoutes.put('/password', authMiddleWare, updateUserPasswordCtrl);
+userRoutes.put(
+  '/profile-photo-upload',
+  authMiddleWare,
+  photoUpload.single('image'),
+  profilePhotoResize,
+  profilePhotoUploadCtrl
 );
 
+userRoutes.post('/forget-password-token', forgetPasswordToken);
+userRoutes.put('/reset-password', passwordResetCtrl);
 
+userRoutes.put('/follow', authMiddleWare, followingUserCtrl);
+userRoutes.post('/generate-verify-email-token', authMiddleWare, generateVerificationTokenCtrl);
+userRoutes.put('/verify-account', authMiddleWare, accountVerificationCtrl);
 
-userRoutes.delete("/:id", deleteUserCtrl);
-userRoutes.get("/profile/:id", authMiddleWare, userProfileCtrl);
+userRoutes.put('/unfollow', authMiddleWare, unfollowUserCtrl);
+userRoutes.put('/block-user/:id', authMiddleWare, blockUserCtrl);
+userRoutes.put('/unblock-user/:id', authMiddleWare, unblockUserCtrl);
 
-userRoutes.put("/", authMiddleWare, updateUserCtrl);
+userRoutes.delete('/:id', deleteUserCtrl);
+userRoutes.get('/profile/:id', authMiddleWare, userProfileCtrl);
 
+userRoutes.put('/', authMiddleWare, updateUserCtrl);
 
-userRoutes.get("/:id", fetchUserDetailsCtrl);
+userRoutes.get('/:id', fetchUserDetailsCtrl);
 
 export default userRoutes;
