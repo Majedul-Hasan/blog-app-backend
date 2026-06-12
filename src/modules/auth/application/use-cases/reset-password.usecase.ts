@@ -23,7 +23,7 @@ export class ResetPasswordUseCase {
   ) {}
 
   async execute(dto: ResetPasswordAuthDto): Promise<void> {
-    const decoded = this.tokenProvider.verify<ResetPasswordPayload>(dto.token);
+    const decoded = this.tokenProvider.verifyAccessToken<ResetPasswordPayload>(dto.token);
 
     const user = await this.userRepo.findById(decoded.userId);
 

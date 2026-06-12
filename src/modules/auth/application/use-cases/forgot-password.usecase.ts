@@ -1,65 +1,50 @@
+import config from '@shared/config/env.const';
 
+import AppError from '@shared/errors/base/AppError';
 
-import config from "@shared/config/env.const";
+import { UserRepository } from '@modules/user/domain/user.repository.interface';
 
-import AppError from "@shared/errors/base/AppError";
-
-import { UserRepository }
-    from "@modules/user/domain/user.repository.interface";
-
-import { ITokenProvider }
-    from "@shared/security/interfaces/token-provider.interface";
-import { EmailProvider } from "@shared/email/email-provider.interface";
-import { ForgotPasswordAuthDto } from "../dto/forgot-password.dto";
-
-
+import { ITokenProvider } from '@shared/security/interfaces/token-provider.interface';
+import { EmailProvider } from '@shared/email/email-provider.interface';
+import { ForgotPasswordAuthDto } from '../dto/forgot-password.dto';
 
 export class ForgotPasswordUseCase {
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly tokenProvider: ITokenProvider,
+    private readonly emailProvider: EmailProvider
+  ) {}
 
-    constructor(
-        private readonly userRepo: UserRepository,
-        private readonly tokenProvider: ITokenProvider,
-        private readonly emailProvider: EmailProvider
-    ) { }
+  async execute(dto: ForgotPasswordAuthDto): Promise<void> {
+    const user = await this.userRepo.findByEmail(dto.email);
 
-    async execute(
-        dto: ForgotPasswordAuthDto
-    ): Promise<void> {
+    /**
+     * Important security practice:
+     * never reveal whether email exists
+     */
 
-        const user =
-            await this.userRepo.findByEmail(
-                dto.email
-            );
+    if (!user) {
+      return;
+    }
 
-        /**
-         * Important security practice:
-         * never reveal whether email exists
-         */
+    const resetToken = this.tokenProvider.generateAccessToken(
+      {
+        userId: user.id,
+        email: user.email,
+      },
+      {
+        expiresIn: config.jwt.secret_expires_in,
+      }
+    );
 
-        if (!user) {
-            return;
-        }
+    const resetUrl = `${config.client_url}/reset-password?token=${resetToken}`;
 
-        const resetToken =
-            this.tokenProvider.generate(
-                {
-                    userId: user.id,
-                    email: user.email,
-                },
-                {
-                    expiresIn: config.jwt.secret_expires_in,
-                }
-            );
+    await this.emailProvider.send({
+      to: user.email,
 
-        const resetUrl =
-            `${config.client_url}/reset-password?token=${resetToken}`;
+      subject: 'Reset Your Password',
 
-        await this.emailProvider.send({
-            to: user.email,
-
-            subject: "Reset Your Password",
-
-            html: `
+      html: `
                 <h2>Password Reset</h2>
 
                 <p>
@@ -75,6 +60,6 @@ export class ForgotPasswordUseCase {
                     This link expires in 15 minutes.
                 </p>
             `,
-        });
-    }
+    });
+  }
 }
