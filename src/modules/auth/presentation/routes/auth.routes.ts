@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authController, authenticationService } from '../controllers';
+import { authController } from '../controllers';
 import { authMiddleware } from '@infra/http/express/middlewares/auth.middleware';
 import validateRequest from '@infra/http/express/middlewares/validateRequest';
 import {
@@ -13,6 +13,7 @@ import {
   verifyAccessTokenValidationSchema,
   verifyEmailValidationSchema,
 } from '../validators';
+import { authenticationService } from '@infra/providers/auth.provider';
 
 const router = Router();
 router.post('/register', validateRequest(RegisterAuthValidationSchema), authController.register);
