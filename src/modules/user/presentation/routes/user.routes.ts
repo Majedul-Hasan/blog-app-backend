@@ -1,16 +1,24 @@
-import { Router } from "express";
-import { loginUserCtrl, userRegisterCtrl, fetchUserByIdCtrl, getUsersCtrl } from "../controllers/user.controller";
-import authMiddleWare from "../../../../middlewares/authMiddleware";
+import { Router } from 'express';
+
+import { authMiddleware } from '@infra/http/express/middlewares/auth.middleware';
+import { authenticationService } from '@infra/providers/auth.provider';
+import { userController } from '../controllers';
+import validateRequest from '@infra/http/express/middlewares/validateRequest';
+import { ParamUserIdValidationSchema } from '../validators/Param-Id.validation';
 
 const userRouter = Router();
-
+// const auth = new authMiddleware();
 /**
  * Auth / Register
  * POST /api/v1/users/register
  */
-userRouter.post("/register", userRegisterCtrl);
-userRouter.post("/login", loginUserCtrl);
-userRouter.get("/", authMiddleWare, getUsersCtrl);
-userRouter.get("/:id", fetchUserByIdCtrl);
+
+// userRouter.get('/', authMiddleware(authenticationService), getUsersCtrl);
+userRouter.get(
+  '/:userId',
+
+  validateRequest(ParamUserIdValidationSchema),
+  userController.userById
+);
 
 export default userRouter;
