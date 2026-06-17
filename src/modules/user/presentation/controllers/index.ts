@@ -10,12 +10,10 @@ import { userRepo } from '@infra/providers/auth.provider';
 import { UserController } from './user-controller.class';
 import { FetchAnUserUseCase } from '@modules/user/application/use-cases/fetch-user.usecase';
 import { FetchUsersUseCase } from '@modules/user/application/use-cases/fetch-users.usecase';
-
-/**
- * repository
- */
+import { DeleteAnUserUseCase } from '@modules/user/application/use-cases/delete-user.usecase';
 
 const fetchAnUserUseCase = new FetchAnUserUseCase(userRepo);
 const fetchUsersUseCase = new FetchUsersUseCase(userRepo);
+const deleteAnUserUseCase = new DeleteAnUserUseCase(userRepo);
 
-export const userController = new UserController(fetchAnUserUseCase, fetchUsersUseCase);
+export const userController = new UserController(fetchAnUserUseCase, fetchUsersUseCase, deleteAnUserUseCase);

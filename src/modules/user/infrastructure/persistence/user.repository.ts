@@ -66,4 +66,8 @@ export class MongoUserRepository implements UserRepository {
     const doc = await UserModel.findOne({ _id: id });
     return doc ? toDomain(doc) : null;
   }
+  async delete(id: string) {
+    const doc = await UserModel.findByIdAndDelete({ _id: id });
+    return doc ? toDomain(doc) : null;
+  }
 }

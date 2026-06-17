@@ -10,9 +10,12 @@ export class FetchUsersUseCase {
 
   async execute(dto: GetUsersDTO): Promise<{
     data: any;
-    total: number;
-    page: number;
-    limit: number;
+    meta: {
+      totalPages: number;
+      total: number;
+      page: number;
+      limit: number;
+    };
   }> {
     const { data, total, page, limit } = await this.userRepo.findAll({
       page: dto.page,
@@ -23,6 +26,14 @@ export class FetchUsersUseCase {
     });
     const toResponse = data.map(user => user.toResponse());
 
-    return { total, page, limit, data: toResponse };
+    return {
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: toResponse,
+    };
   }
 }
